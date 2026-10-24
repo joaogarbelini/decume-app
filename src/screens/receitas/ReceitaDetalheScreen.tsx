@@ -69,6 +69,12 @@ export function ReceitaDetalheScreen() {
         }
       />
       <main className="view">
+        {r.status === 'rascunho' && (
+          <div className="alert warn" role="note">
+            <strong>Rascunho importado.</strong> Revise os ingredientes para a receita entrar no cardápio e nas sugestões.{' '}
+            <Link to={`/receitas/${r.id}/editar`}>Revisar agora</Link>
+          </div>
+        )}
         <Capa recipeId={r.id} capaId={r.capaFotoId} />
 
         <section className="sec">

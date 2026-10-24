@@ -42,7 +42,7 @@ const limparTags = (tags: string[]) => [...new Set(tags.map((t) => t.trim().toLo
  * anterior (decisão do MVP). Receita salva pelo formulário já é "minha receita".
  * Devolve o id.
  */
-export async function salvarReceita(draft: RecipeDraft, id?: string, d: DecumeDB = defaultDb): Promise<string> {
+export async function salvarReceita(draft: RecipeDraft, id?: string, d: DecumeDB = defaultDb, status: Recipe['status'] = 'minha'): Promise<string> {
   const titulo = draft.titulo.trim();
   if (!titulo) throw new RecipeError('Dê um nome para a receita.');
   if (!(draft.porcoes >= 1)) throw new RecipeError('A receita precisa render pelo menos 1 porção.');
@@ -58,7 +58,7 @@ export async function salvarReceita(draft: RecipeDraft, id?: string, d: DecumeDB
     const recipe: Recipe = {
       id: recipeId,
       titulo,
-      status: 'minha',
+      status,
       porcoes: Math.round(draft.porcoes),
       tempoMin: draft.tempoMin && draft.tempoMin > 0 ? Math.round(draft.tempoMin) : null,
       tags: limparTags(draft.tags),
@@ -89,6 +89,11 @@ export async function salvarReceita(draft: RecipeDraft, id?: string, d: DecumeDB
     if (passos.length) await d.recipeSteps.bulkAdd(passos.map((texto, ordem) => ({ recipeId, ordem, texto })));
   });
   return recipeId;
+}
+
+/** Receita importada: entra como rascunho e só vira "minha receita" depois de revisada. */
+export async function salvarRascunho(draft: RecipeDraft, d: DecumeDB = defaultDb): Promise<string> {
+  return salvarReceita({ ...draft, titulo: draft.titulo.trim() || 'Receita importada' }, undefined, d, 'rascunho');
 }
 
 export async function carregarReceita(id: string, d: DecumeDB = defaultDb): Promise<ReceitaCompleta | null> {

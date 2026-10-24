@@ -65,20 +65,32 @@ export function LivroScreen() {
             icon="book"
             title="Seu livro de receitas está vazio"
             action={
-              <Link className="btn" to="/receitas/nova">
-                <Icon name="plus" />
-                Nova receita
-              </Link>
+              <div className="row-btns">
+                <Link className="btn" to="/receitas/nova">
+                  <Icon name="plus" />
+                  Nova receita
+                </Link>
+                <Link className="btn ghost" to="/receitas/importar">
+                  <Icon name="link" />
+                  Importar
+                </Link>
+              </div>
             }
           >
             Cadastre suas receitas com ingredientes e passos. O app calcula calorias e macros por porção e marca as vegetarianas.
           </EmptyState>
         ) : (
           <>
-            <Link className="btn block" to="/receitas/nova">
-              <Icon name="plus" />
-              Nova receita
-            </Link>
+            <div className="row-btns">
+              <Link className="btn" to="/receitas/nova">
+                <Icon name="plus" />
+                Nova receita
+              </Link>
+              <Link className="btn ghost" to="/receitas/importar">
+                <Icon name="link" />
+                Importar
+              </Link>
+            </div>
             <div className="filters">
               <label className="search">
                 <Icon name="search" />

@@ -162,6 +162,9 @@ const ROWS: Row[] = [
   ['cominho', 'Cominho', 'g', 'nivel', T, null, null, '', []],
   ['noz-moscada', 'Noz-moscada', 'g', 'nivel', T, null, null, '', []],
   ['louro', 'Folha de louro', 'un', 'nivel', T, null, null, '', ['louro']],
+
+  // Versão 2 do catálogo
+  ['agua', 'Água', 'ml', 'nivel', M, null, null, 's', ['água filtrada', 'água quente', 'água fervente', 'água gelada']],
 ];
 
 export function buildCatalog(now: string): Ingredient[] {

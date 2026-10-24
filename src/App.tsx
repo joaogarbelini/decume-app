@@ -11,6 +11,7 @@ import { HistoricoScreen } from './screens/despensa/HistoricoScreen';
 import { LivroScreen } from './screens/receitas/LivroScreen';
 import { ReceitaDetalheScreen } from './screens/receitas/ReceitaDetalheScreen';
 import { ReceitaFormScreen } from './screens/receitas/ReceitaFormScreen';
+import { ImportarScreen } from './screens/receitas/ImportarScreen';
 
 // HashRouter: funciona no GitHub Pages sem configuração de servidor.
 export function App() {
@@ -24,6 +25,7 @@ export function App() {
           <Route path="/despensa/historico" element={<HistoricoScreen />} />
           <Route path="/receitas" element={<LivroScreen />} />
           <Route path="/receitas/nova" element={<ReceitaFormScreen key="nova" />} />
+          <Route path="/receitas/importar" element={<ImportarScreen />} />
           <Route path="/receitas/:id" element={<ReceitaDetalheScreen />} />
           <Route path="/receitas/:id/editar" element={<ReceitaFormScreen />} />
           <Route path="/cozinhar/:id" element={<CozinharScreen />} />

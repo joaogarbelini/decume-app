@@ -6,6 +6,7 @@ import { SubHeader } from '../components/Layout';
 import { db } from '../db/db';
 import { BackupError, downloadBackup, parseBackup, restoreBackup, type BackupFile } from '../lib/backup';
 import { APP_VERSION } from '../lib/version';
+import { definirImportadorUrl, ImportadorError, obterImportadorUrl, testarImportador } from '../lib/importador';
 
 type Aviso = { tipo: 'ok' | 'err'; texto: string } | null;
 
@@ -127,6 +128,8 @@ export function AjustesScreen() {
           )}
         </section>
 
+        <ImportadorAjuste />
+
         <section className="sec">
           <div className="sec-h">
             <h2>Sobre</h2>
@@ -139,5 +142,60 @@ export function AjustesScreen() {
         </section>
       </main>
     </>
+  );
+}
+
+/** Endereço do importador de receitas (Cloudflare Worker em worker/ no repositório). */
+function ImportadorAjuste() {
+  const salvo = useLiveQuery(async () => (await obterImportadorUrl()) ?? '', []);
+  const [valor, setValor] = useState<string | null>(null);
+  const [aviso, setAviso] = useState<Aviso>(null);
+  const [ocupado, setOcupado] = useState(false);
+  const atual = valor ?? salvo ?? '';
+
+  async function salvar() {
+    setAviso(null);
+    setOcupado(true);
+    try {
+      if (atual.trim()) await testarImportador(atual.trim());
+      await definirImportadorUrl(atual);
+      setValor(null);
+      setAviso({ tipo: 'ok', texto: atual.trim() ? 'Importador funcionando. Já dá para importar pelo link.' : 'Importador removido.' });
+    } catch (e) {
+      setAviso({ tipo: 'err', texto: e instanceof ImportadorError ? e.message : 'Não deu para salvar.' });
+    } finally {
+      setOcupado(false);
+    }
+  }
+
+  return (
+    <section className="sec">
+      <div className="sec-h">
+        <h2>Importação por link</h2>
+      </div>
+      <div className="ajuste-imp">
+        <p className="note">
+          <Icon name="info" />
+          <span>Endereço do importador, o serviço que busca a página da receita (ex.: https://decume-importador.seu-usuario.workers.dev). Sem ele, dá para importar colando o texto.</span>
+        </p>
+        <input
+          className="input"
+          type="url"
+          inputMode="url"
+          value={atual}
+          onChange={(e) => setValor(e.target.value)}
+          placeholder="https://…workers.dev"
+          aria-label="Endereço do importador"
+        />
+        <button className="btn ghost" onClick={salvar} disabled={ocupado || atual === (salvo ?? '')}>
+          {ocupado ? 'Testando…' : 'Testar e salvar'}
+        </button>
+        {aviso && (
+          <div className={`alert ${aviso.tipo}`} role="status">
+            {aviso.texto}
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

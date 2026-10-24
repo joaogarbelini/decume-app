@@ -95,6 +95,7 @@ const limparPasso = (s: string) => s.replace(/^\s*(passo\s*)?\d+\s*[.)\-:–]\s*
 export function ReceitaFormScreen() {
   const { id } = useParams();
   const editando = Boolean(id);
+  const [rascunho, setRascunho] = useState(false);
   const navigate = useNavigate();
   const catalogo = useCatalogo();
   const todasTags = useLiveQuery(async () => [...new Set((await db.recipes.toArray()).flatMap((r) => r.tags))], []);
@@ -125,6 +126,7 @@ export function ReceitaFormScreen() {
       if (!r) return navigate('/receitas', { replace: true });
       const e = deDraft(paraDraft(r));
       inicial.current = assinatura(e);
+      setRascunho(r.recipe.status === 'rascunho');
       setEstado(e);
     });
     return () => {
@@ -137,7 +139,8 @@ export function ReceitaFormScreen() {
     return [...new Set([...(todasTags ?? []), ...TAGS_SUGERIDAS])].filter((t) => !ja.has(t)).slice(0, 10);
   }, [todasTags, estado?.tags]);
 
-  if (!estado || !catalogo) return <SubHeader title={editando ? 'Editar receita' : 'Nova receita'} />;
+  const tituloTela = rascunho ? 'Revisar receita' : editando ? 'Editar receita' : 'Nova receita';
+  if (!estado || !catalogo) return <SubHeader title={tituloTela} />;
 
   const set = (patch: Partial<Estado>) => setEstado((e) => (e ? { ...e, ...patch } : e));
   const setLinha = (key: string, patch: Partial<LinhaForm>) =>
@@ -156,7 +159,9 @@ export function ReceitaFormScreen() {
     const alvo = picker?.trocar;
     setPicker(null);
     if (alvo) {
-      setLinha(alvo, { ingredientId: ing.id, textoOriginal: null, unidade: ing.unidadeBase, conv: '' });
+      const atual = estado!.linhas.find((l) => l.key === alvo);
+      const unidadeValida = atual?.unidade && (unidadesPara(ing) as string[]).includes(atual.unidade) ? atual.unidade : ing.unidadeBase;
+      setLinha(alvo, { ingredientId: ing.id, unidade: unidadeValida, conv: '' });
       return;
     }
     const nova = k();
@@ -202,6 +207,11 @@ export function ReceitaFormScreen() {
     setErro(null);
     const ingredientes: RecipeDraft['ingredientes'] = [];
     const conversoes: [string, string, number][] = [];
+    const semCatalogo = estado.linhas.filter((l) => !l.ingredientId);
+    if (semCatalogo.length) {
+      setErro(`Escolha no catálogo o ingrediente de: ${semCatalogo.map((l) => `"${l.textoOriginal ?? '?'}"`).join(', ')}. Toque no nome em laranja, ou remova a linha.`);
+      return;
+    }
     for (const l of estado.linhas) {
       const ing = l.ingredientId ? catalogo.get(l.ingredientId) : undefined;
       const nome = ing?.nome ?? l.textoOriginal ?? 'ingrediente';
@@ -269,8 +279,14 @@ export function ReceitaFormScreen() {
 
   return (
     <>
-      <SubHeader title={editando ? 'Editar receita' : 'Nova receita'} onBack={sair} />
+      <SubHeader title={tituloTela} onBack={sair} />
       <main className="view form-view">
+        {rascunho && (
+          <div className="alert warn" role="note">
+            <strong>Receita importada.</strong> Confira os ingredientes: <span className="dot ok" /> reconhecido, <span className="dot miss" /> escolha no catálogo,{' '}
+            <span className="dot neu" /> a gosto. Ao salvar, ela vira sua receita e entra no cardápio e nas sugestões.
+          </div>
+        )}
         <section className="sec form">
           <label className="field">
             <span className="label">Nome da receita</span>
@@ -345,13 +361,14 @@ export function ReceitaFormScreen() {
           </div>
           {estado.linhas.map((l, i) => {
             const ing = l.ingredientId ? catalogo.get(l.ingredientId) : undefined;
-            const unidades = ing ? unidadesPara(ing) : [];
+            const unidades: string[] = ing ? unidadesPara(ing) : l.unidade ? [l.unidade] : [];
             const semConv = ing && !l.aGosto && faltaConversao(ing, l.unidade);
             return (
               <div className="card ing-edit" key={l.key} data-linha={l.key}>
                 <div className="ie-top">
-                  <button type="button" className="ie-name" onClick={() => setPicker({ trocar: l.key })}>
-                    <span>{ing?.nome ?? l.textoOriginal ?? 'Escolher ingrediente'}</span>
+                  <button type="button" className={`ie-name ${!ing ? 'falta' : ''}`} onClick={() => setPicker({ trocar: l.key })}>
+                    {(rascunho || !ing) && <span className={`dot ${!ing ? 'miss' : l.aGosto ? 'neu' : 'ok'}`} aria-hidden="true" />}
+                    <span>{ing?.nome ?? 'Escolher ingrediente'}</span>
                     <Icon name="chevron" />
                   </button>
                   <div className="ie-tools">
@@ -366,6 +383,7 @@ export function ReceitaFormScreen() {
                     </button>
                   </div>
                 </div>
+                {l.textoOriginal && <div className="original">Original: {l.textoOriginal}</div>}
                 {!l.aGosto && (
                   <div className="ie-qty">
                     <input
@@ -516,7 +534,7 @@ export function ReceitaFormScreen() {
         )}
         <button type="button" className="btn block" onClick={salvar} disabled={salvando || !estado.titulo.trim()}>
           <Icon name="check" />
-          {salvando ? 'Salvando…' : 'Salvar receita'}
+          {salvando ? 'Salvando…' : rascunho ? 'Salvar como minha receita' : 'Salvar receita'}
         </button>
       </div>
 

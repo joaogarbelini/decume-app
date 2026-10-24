@@ -1,0 +1,7 @@
+name = "decume-importador"
+main = "importador.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+# Origens que podem usar o importador (o endereço do app e o computador, para testes).
+ORIGENS = "https://joaogarbelini.github.io,http://localhost:5173,http://localhost:4173"

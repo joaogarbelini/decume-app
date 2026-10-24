@@ -47,6 +47,13 @@ App pessoal para organizar a despensa, montar o cardápio da semana, guardar rec
 - Marmitas na tela Semana, com "Comi uma" e descartar.
 - Nota média no livro de receitas (com filtro "Nota 4+") e avaliações no detalhe da receita, com os comentários.
 
+### Etapa 6: importação de receitas
+
+- Receitas → Importar: pelo link (TudoGostoso e sites com dados no padrão schema.org) ou colando o texto da receita.
+- O app separa quantidade, unidade e ingrediente de cada linha ("2 e 1/2 xícaras (chá) de farinha de trigo", "1 lata (395 g) de leite condensado", "sal e pimenta a gosto") e casa com o catálogo.
+- A receita entra como rascunho e abre na revisão: ponto verde = reconhecido, laranja = escolha no catálogo, cinza = a gosto, com o texto original embaixo. Só depois de salva ela entra no cardápio e nas sugestões.
+- Pelo link, a foto da receita vira a capa.
+
 ## Próximas etapas
 
 1. ~~Fundação~~
@@ -54,7 +61,7 @@ App pessoal para organizar a despensa, montar o cardápio da semana, guardar rec
 3. ~~Despensa: estoque exato e por nível, compra avulsa, ajuste, histórico~~
 4. ~~Cardápio da semana e lista de compras por seção~~
 5. ~~Cozinhar: modo checklist, baixa, marmitas, avaliação~~
-6. Importação de receitas por link (TudoGostoso)
+6. ~~Importação de receitas por link (TudoGostoso)~~
 7. Sugestões com base na despensa
 
 O planejamento completo está no documento "deCumê — Guideline do App".
@@ -77,6 +84,22 @@ Cada push na branch `main` roda os testes e publica o app no GitHub Pages (arqui
 O app fica em **https://joaogarbelini.github.io/decume-app/** (Pages ativado em Settings → Pages → Source: GitHub Actions).
 
 Para instalar: abra o endereço no celular e use "Adicionar à tela inicial" (Safari no iPhone) ou "Instalar app" (Chrome no Android).
+
+## Importador de receitas (para importar pelo link)
+
+O navegador do celular não consegue baixar páginas de outros sites, então a importação pelo link usa um serviço pequeno e gratuito na Cloudflare, que está em `worker/`. Ele só busca a página ou a foto e devolve para o app; não guarda nada. Sem ele, a importação colando o texto continua funcionando.
+
+Para criar (uma vez, uns 5 minutos):
+
+1. Crie uma conta gratuita em [dash.cloudflare.com](https://dash.cloudflare.com).
+2. Vá em **Workers & Pages → Create → Create Worker**, dê o nome `decume-importador` e clique em **Deploy**.
+3. Clique em **Edit code**, apague o código de exemplo, cole o conteúdo de `worker/importador.js` e clique em **Deploy**.
+4. Copie o endereço do Worker (algo como `https://decume-importador.seu-usuario.workers.dev`).
+5. No app, em **Ajustes → Importação por link**, cole o endereço e toque em **Testar e salvar**.
+
+Pelo terminal, o mesmo: `cd worker && npx wrangler deploy`.
+
+O importador só aceita pedidos vindos do endereço do app (variável `ORIGENS` em `worker/wrangler.toml`) e recusa endereços internos.
 
 ## Onde ficam os dados
 

@@ -63,7 +63,8 @@ export function calcularLista(e: EntradaLista): ResultadoLista {
       if (!ing) continue;
       // sal, pimenta: nunca entram na lista, só lembrete (mesmo "a gosto")
       if (ing.sempreTenho) {
-        if (!l.opcional) lembretes.add(ing.nome);
+        // água não precisa de lembrete; sal, pimenta e afins sim
+        if (!l.opcional && ing.secao === 'Temperos e condimentos') lembretes.add(ing.nome);
         continue;
       }
       if (l.aGosto || l.opcional) continue;

@@ -2,7 +2,7 @@ import { buildCatalog } from '../data/catalog';
 import { db as defaultDb, type DecumeDB } from './db';
 
 /** Suba este número quando o catálogo inicial ganhar itens novos. */
-export const CATALOG_VERSION = 1;
+export const CATALOG_VERSION = 2;
 
 /**
  * Semeia o catálogo de ingredientes na primeira abertura (e quando a versão sobe).
