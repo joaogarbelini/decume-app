@@ -56,16 +56,3 @@ export function DespensaScreen() {
     </>
   );
 }
-
-export function ReceitasScreen() {
-  return (
-    <>
-      <TabHeader title="Receitas" eyebrow="Seu livro" />
-      <main className="view">
-        <EmptyState icon="book" title="Seu livro de receitas está vazio">
-          Em breve: cadastro por formulário e importação por link do TudoGostoso, com revisão antes de salvar.
-        </EmptyState>
-      </main>
-    </>
-  );
-}

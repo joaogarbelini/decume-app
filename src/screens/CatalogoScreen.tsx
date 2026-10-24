@@ -4,8 +4,8 @@ import { Icon } from '../components/Icon';
 import { SubHeader } from '../components/Layout';
 import { db } from '../db/db';
 import { SECOES, type Ingredient } from '../db/types';
+import { semAcento } from '../lib/text';
 
-const semAcento = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 function unidadeTexto(i: Ingredient) {
   if (i.unidadeBase === 'un') return i.pesoUnidadeG ? `unidade (~${i.pesoUnidadeG} g)` : 'unidade';

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Icon, type IconName } from './Icon';
 
 const TABS: { to: string; label: string; icon: IconName }[] = [
@@ -9,7 +9,12 @@ const TABS: { to: string; label: string; icon: IconName }[] = [
   { to: '/receitas', label: 'Receitas', icon: 'book' },
 ];
 
+/** Telas de formulário escondem a barra de abas e usam a base da tela para o botão Salvar. */
+const SEM_ABAS = [/^\/receitas\/nova$/, /^\/receitas\/[^/]+\/editar$/];
+
 export function TabBar() {
+  const { pathname } = useLocation();
+  if (SEM_ABAS.some((r) => r.test(pathname))) return null;
   return (
     <nav className="tabs" aria-label="Seções">
       {TABS.map((t) => (
@@ -38,13 +43,17 @@ export function TabHeader({ title, eyebrow }: { title: string; eyebrow?: string 
 }
 
 /** Cabeçalho das telas internas, com botão de voltar. */
-export function SubHeader({ title, right }: { title: string; right?: ReactNode }) {
+export function SubHeader({ title, right, onBack }: { title: string; right?: ReactNode; onBack?: () => void }) {
   const navigate = useNavigate();
   return (
     <header className="top">
       <button
         className="iconbtn"
-        onClick={() => (window.history.state?.idx > 0 ? navigate(-1) : navigate('/'))}
+        onClick={() => {
+          if (onBack) onBack();
+          else if (window.history.state?.idx > 0) navigate(-1);
+          else navigate('/');
+        }}
         aria-label="Voltar"
       >
         <Icon name="back" />
