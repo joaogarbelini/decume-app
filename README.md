@@ -40,13 +40,20 @@ App pessoal para organizar a despensa, montar o cardápio da semana, guardar rec
 - Revisão das receitas que ficaram a fazer em semanas passadas: Fiz, Adiar ou Tirar.
 - Tela Semana com as receitas desta semana e "Marcar como feita", que mostra a baixa prevista e avisa se a despensa tinha menos do que a receita usa.
 
+### Etapa 5: cozinhar
+
+- Modo cozinhar com texto grande, tela sempre acesa (quando o navegador permite), checklist de ingredientes e de passos, com o passo atual em destaque. Os passos marcados ficam salvos se sair e voltar.
+- Finalizar (depois de cozinhar, pelo "Já fiz" da semana ou pelo "Fiz" da revisão): baixa prevista com as quantidades editáveis, toque rápido no nível dos básicos usados, marmitas (sugere o que passou de 2 porções) e avaliação opcional por sabor, facilidade, custo-benefício e apresentação, "Faria de novo?", comentário e fotos.
+- Marmitas na tela Semana, com "Comi uma" e descartar.
+- Nota média no livro de receitas (com filtro "Nota 4+") e avaliações no detalhe da receita, com os comentários.
+
 ## Próximas etapas
 
 1. ~~Fundação~~
 2. ~~Receitas: formulário, detalhe, edição, fotos, cálculo nutricional, marca de vegetariana~~
 3. ~~Despensa: estoque exato e por nível, compra avulsa, ajuste, histórico~~
 4. ~~Cardápio da semana e lista de compras por seção~~
-5. Cozinhar: modo checklist, baixa, marmitas, avaliação
+5. ~~Cozinhar: modo checklist, baixa, marmitas, avaliação~~
 6. Importação de receitas por link (TudoGostoso)
 7. Sugestões com base na despensa
 

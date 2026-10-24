@@ -7,14 +7,18 @@ import { EmptyState, TabHeader } from '../../components/Layout';
 import { db } from '../../db/db';
 import type { Recipe, RecipeIngredient } from '../../db/types';
 import { calcularNutricao, ehVegetariana } from '../../lib/nutrition';
+import { resumosPorReceita } from '../../db/cook';
+import { Nota } from '../../components/Stars';
 import { casaBusca, plural } from '../../lib/text';
 
 const VEG = '__veg__';
+const BOAS = '__boas__';
 
 export function LivroScreen() {
   const receitas = useLiveQuery(() => db.recipes.orderBy('titulo').toArray(), []);
   const linhas = useLiveQuery(() => db.recipeIngredients.toArray(), []);
   const catalogo = useCatalogo();
+  const notas = useLiveQuery(() => resumosPorReceita(), []);
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<string | null>(null);
 
@@ -37,15 +41,17 @@ export function LivroScreen() {
 
   const tags = useMemo(() => [...new Set((receitas ?? []).flatMap((r) => r.tags))].sort((a, b) => a.localeCompare(b, 'pt-BR')), [receitas]);
   const temVeg = useMemo(() => [...info.values()].some((i) => i.veg), [info]);
+  const temBoas = useMemo(() => [...(notas?.values() ?? [])].some((n) => n.nota >= 4), [notas]);
 
   const visiveis = useMemo(
     () =>
       (receitas ?? []).filter((r) => {
         if (filtro === VEG && !info.get(r.id)?.veg) return false;
-        if (filtro && filtro !== VEG && !r.tags.includes(filtro)) return false;
+        if (filtro === BOAS && (notas?.get(r.id)?.nota ?? 0) < 4) return false;
+        if (filtro && filtro !== VEG && filtro !== BOAS && !r.tags.includes(filtro)) return false;
         return casaBusca(busca, r.titulo, ...r.tags);
       }),
-    [receitas, filtro, busca, info],
+    [receitas, filtro, busca, info, notas],
   );
 
   if (!receitas) return <TabHeader title="Receitas" eyebrow="Seu livro" />;
@@ -78,7 +84,7 @@ export function LivroScreen() {
                 <Icon name="search" />
                 <input type="search" placeholder="Buscar receita ou tag" value={busca} onChange={(e) => setBusca(e.target.value)} aria-label="Buscar receita" />
               </label>
-              {(temVeg || tags.length > 0) && (
+              {(temVeg || temBoas || tags.length > 0) && (
                 <div className="chip-row" role="group" aria-label="Filtrar">
                   <button type="button" className={`fchip ${filtro === null ? 'on' : ''}`} aria-pressed={filtro === null} onClick={() => setFiltro(null)}>
                     Todas
@@ -87,6 +93,12 @@ export function LivroScreen() {
                     <button type="button" className={`fchip ${filtro === VEG ? 'on' : ''}`} aria-pressed={filtro === VEG} onClick={() => setFiltro(filtro === VEG ? null : VEG)}>
                       <Icon name="leaf" />
                       Vegetarianas
+                    </button>
+                  )}
+                  {temBoas && (
+                    <button type="button" className={`fchip ${filtro === BOAS ? 'on' : ''}`} aria-pressed={filtro === BOAS} onClick={() => setFiltro(filtro === BOAS ? null : BOAS)}>
+                      <Icon name="star" />
+                      Nota 4+
                     </button>
                   )}
                   {tags.map((t) => (
@@ -99,7 +111,7 @@ export function LivroScreen() {
             </div>
             <div className="recipe-list">
               {visiveis.map((r) => (
-                <RecipeCard key={r.id} r={r} info={info.get(r.id)} />
+                <RecipeCard key={r.id} r={r} info={info.get(r.id)} nota={notas?.get(r.id)?.nota} />
               ))}
               {!visiveis.length && <div className="card empty-state"><p>Nenhuma receita com esse filtro.</p></div>}
             </div>
@@ -110,7 +122,7 @@ export function LivroScreen() {
   );
 }
 
-function RecipeCard({ r, info }: { r: Recipe; info?: { veg: boolean; kcal: number | null; parcial: boolean } }) {
+function RecipeCard({ r, info, nota }: { r: Recipe; info?: { veg: boolean; kcal: number | null; parcial: boolean }; nota?: number }) {
   const url = useFotoUrl(r.capaFotoId);
   return (
     <Link className="card rcard" to={`/receitas/${r.id}`}>
@@ -136,6 +148,7 @@ function RecipeCard({ r, info }: { r: Recipe; info?: { veg: boolean; kcal: numbe
           )}
         </div>
         <div className="metas">
+          {nota != null && <Nota valor={nota} />}
           {r.status === 'rascunho' && <span className="chip miss">rascunho</span>}
           {info?.veg && (
             <span className="chip ok">

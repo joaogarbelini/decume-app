@@ -399,6 +399,62 @@ a.plain { color: inherit; text-decoration: none; display: block; }
 .li.bought .name { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--navy-line); }
 .buy-info { display: flex; flex-direction: column; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; }
 
+
+/* ---------- Etapa 5: cozinhar ---------- */
+.btn.disabled { opacity: 0.45; pointer-events: none; }
+.detail-actions { margin-top: 2px; }
+.detail-actions .btn { flex: 0 1 auto; }
+.week-actions { margin-top: 4px; }
+.week-actions .btn { flex: 0 1 auto; }
+.nota { display: inline-flex; align-items: center; gap: 3px; font-weight: 800; font-size: 13px; color: var(--accent-ink); }
+.nota svg { width: 14px; height: 14px; fill: var(--accent); stroke: var(--accent); }
+.nota small { color: var(--muted); font-weight: 600; }
+.stars { display: flex; gap: 2px; }
+.star { width: 32px; height: 40px; border: 0; background: none; padding: 0; color: var(--navy-line); display: grid; place-items: center; }
+.star svg { width: 25px; height: 25px; }
+.star.on { color: var(--accent); }
+.star.on svg { fill: var(--accent); }
+.rating-card { display: flex; flex-direction: column; gap: 12px; }
+.rating-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.rating-row .name { font-weight: 700; }
+.rating-row .sub { font-size: 12px; color: var(--muted); }
+.marmita-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-weight: 700; }
+.baixa-li { gap: 8px; }
+.baixa-in { width: 92px; min-height: 42px; text-align: right; font-weight: 700; flex: none; }
+.unit { width: 22px; font-size: 13px; color: var(--muted); font-weight: 700; flex: none; }
+.gx { position: absolute; top: 4px; right: 4px; width: 28px; height: 28px; border-radius: 50%; border: 0; background: var(--navy); color: var(--on-navy); display: grid; place-items: center; }
+.gx svg { width: 14px; height: 14px; }
+.gthumb { overflow: hidden; }
+.crit { display: flex; flex-direction: column; gap: 8px; }
+.crit-row { display: grid; grid-template-columns: 120px 1fr 32px; align-items: center; gap: 10px; font-size: 14px; }
+.crit-row:last-child { grid-template-columns: 1fr auto; }
+.crit-row strong { text-align: right; color: var(--navy); }
+.bar { height: 8px; border-radius: 99px; background: var(--navy-soft); overflow: hidden; }
+.bar span { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+.comment { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.comment p { margin: 0 0 2px; font-style: italic; }
+.comment .sub { font-size: 12px; color: var(--muted); }
+/* modo cozinhar: texto grande (20 px) e alvos maiores */
+.cook { font-size: 20px; }
+.cook .sec-h h2 { font-size: 20px; }
+.check-li { border: 0; border-bottom: 1px solid var(--line); background: none; width: 100%; text-align: left; color: inherit; min-height: 60px; font-size: 19px; }
+.check-li:last-child { border-bottom: 0; }
+.check-li .qty { width: 92px; flex: none; color: var(--navy); }
+.check-li .name { font-weight: 700; }
+.check-li .sub { font-size: 15px; }
+.check-li.done .name, .check-li.done .qty { text-decoration: line-through; color: var(--muted); }
+.checkcircle { display: grid; place-items: center; color: #fff; }
+.checkcircle svg { width: 16px; height: 16px; }
+.checkcircle.on { background: var(--sage); border-color: var(--sage); }
+.cook-steps { gap: 10px; }
+.step-btn { display: flex; gap: 14px; align-items: flex-start; width: 100%; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 14px; font-size: 20px; line-height: 1.4; color: inherit; }
+.step-btn .sn { width: 34px; height: 34px; font-size: 16px; margin-top: 1px; }
+.step-btn .sn svg { width: 18px; height: 18px; }
+.step-btn.atual { border: 2px solid var(--accent); }
+.step-btn.done { opacity: 0.55; }
+.step-btn.done .sn { background: var(--sage); }
+.top .chip svg { width: 14px; height: 14px; }
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }

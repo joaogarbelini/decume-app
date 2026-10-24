@@ -10,7 +10,7 @@ const TABS: { to: string; label: string; icon: IconName }[] = [
 ];
 
 /** Telas de formulário escondem a barra de abas e usam a base da tela para o botão Salvar. */
-const SEM_ABAS = [/^\/receitas\/nova$/, /^\/receitas\/[^/]+\/editar$/];
+const SEM_ABAS = [/^\/receitas\/nova$/, /^\/receitas\/[^/]+\/editar$/, /^\/cozinhar\//, /^\/receitas\/importar$/];
 
 export function TabBar() {
   const { pathname } = useLocation();

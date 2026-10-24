@@ -1,33 +1,63 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { EmptyState, TabHeader } from '../components/Layout';
 import { RecipeThumb } from '../components/RecipeThumb';
+import { comerMarmita, descartarMarmita, marmitas } from '../db/cook';
 import { db } from '../db/db';
 import type { WeekRecipe } from '../db/types';
 import { chaveSemana, rotuloSemana } from '../lib/dates';
 import { plural } from '../lib/text';
-import { FeitaSheet } from './planejar/FeitaSheet';
 
 export function SemanaScreen() {
   const semana = chaveSemana(new Date());
   const cardapio = useLiveQuery(() => db.weekRecipes.where('semana').equals(semana).toArray(), [semana]);
   const receitas = useLiveQuery(async () => new Map((await db.recipes.toArray()).map((r) => [r.id, r])), []);
-  const [fazendo, setFazendo] = useState<WeekRecipe | null>(null);
+  const sobras = useLiveQuery(() => marmitas(), []);
 
-  if (!cardapio || !receitas) return <TabHeader title="Esta semana" eyebrow={rotuloSemana(new Date())} />;
+  if (!cardapio || !receitas || !sobras) return <TabHeader title="Esta semana" eyebrow={rotuloSemana(new Date())} />;
 
   const ativos = cardapio.filter((w) => w.status !== 'removida');
   const aFazer = ativos.filter((w) => w.status === 'a_fazer');
   const feitas = ativos.filter((w) => w.status === 'feita');
-  const titulo = (w: WeekRecipe) => receitas.get(w.recipeId)?.titulo ?? 'Receita apagada';
-  const ordenar = (a: WeekRecipe, b: WeekRecipe) => titulo(a).localeCompare(titulo(b), 'pt-BR');
+  const titulo = (id: string) => receitas.get(id)?.titulo ?? 'Receita apagada';
+  const ordenar = (a: WeekRecipe, b: WeekRecipe) => titulo(a.recipeId).localeCompare(titulo(b.recipeId), 'pt-BR');
+  const totalMarmitas = sobras.reduce((s, m) => s + m.porcoesRestantes, 0);
 
   return (
     <>
       <TabHeader title="Esta semana" eyebrow={rotuloSemana(new Date())} />
       <main className="view">
+        {sobras.length > 0 && (
+          <section className="sec">
+            <div className="sec-h">
+              <h2>Marmitas na geladeira</h2>
+              <span className="meta">{plural(totalMarmitas, 'porção', 'porções')}</span>
+            </div>
+            <div className="card">
+              <div className="list">
+                {sobras.map((m) => (
+                  <div className="li" key={m.id}>
+                    <Icon name="bowl" />
+                    <div className="grow">
+                      <div className="name">
+                        {plural(m.porcoesRestantes, 'porção', 'porções')} de {titulo(m.recipeId).toLowerCase()}
+                      </div>
+                      <div className="sub">feita {new Date(m.feitaEm).toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'short' })}</div>
+                    </div>
+                    <button type="button" className="tool" onClick={() => window.confirm('Jogar fora o resto dessa marmita?') && void descartarMarmita(m.id)} aria-label={`Descartar marmita de ${titulo(m.recipeId)}`}>
+                      <Icon name="trash" />
+                    </button>
+                    <button type="button" className="btn ghost sm" onClick={() => void comerMarmita(m.id)}>
+                      Comi uma
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {!ativos.length ? (
           <EmptyState
             icon="week"
@@ -57,7 +87,7 @@ export function SemanaScreen() {
                         <RecipeThumb capaId={r?.capaFotoId ?? null} />
                         <div className="grow">
                           <Link className="rtitle plain" to={r ? `/receitas/${r.id}` : '#'}>
-                            {titulo(w)}
+                            {titulo(w.recipeId)}
                           </Link>
                           <div className="rmeta">
                             <span>
@@ -71,10 +101,17 @@ export function SemanaScreen() {
                               </span>
                             )}
                           </div>
-                          <button type="button" className="btn ghost sm" onClick={() => setFazendo(w)} disabled={!r}>
-                            <Icon name="check" />
-                            Marcar como feita
-                          </button>
+                          {r && (
+                            <div className="row-btns week-actions">
+                              <Link className="btn sm" to={`/cozinhar/${r.id}?w=${w.id}`}>
+                                <Icon name="pot" />
+                                Cozinhar
+                              </Link>
+                              <Link className="btn ghost sm" to={`/cozinhar/${r.id}/finalizar?w=${w.id}`}>
+                                Já fiz
+                              </Link>
+                            </div>
+                          )}
                         </div>
                       </div>
                     );
@@ -106,7 +143,7 @@ export function SemanaScreen() {
                           feita
                         </span>
                         <div className="grow">
-                          <div className="name">{titulo(w)}</div>
+                          <div className="name">{titulo(w.recipeId)}</div>
                           <div className="sub">{plural(w.porcoes, 'porção', 'porções')}</div>
                         </div>
                       </div>
@@ -122,7 +159,6 @@ export function SemanaScreen() {
           </>
         )}
       </main>
-      {fazendo && <FeitaSheet w={fazendo} onClose={() => setFazendo(null)} />}
     </>
   );
 }

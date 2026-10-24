@@ -30,7 +30,6 @@ import { formatEstoque } from '../../lib/units';
 import { textoMovimento } from '../despensa/MovimentoLinha';
 import { AdicionarReceitaSheet } from './AdicionarReceitaSheet';
 import { CompraSheet } from './CompraSheet';
-import { FeitaSheet } from './FeitaSheet';
 
 export function PlanejarScreen() {
   const [params, setParams] = useSearchParams();
@@ -52,7 +51,6 @@ export function PlanejarScreen() {
   const [adicionandoReceita, setAdicionandoReceita] = useState(false);
   const [adicionandoAvulso, setAdicionandoAvulso] = useState(false);
   const [comprando, setComprando] = useState<LinhaLista | null>(null);
-  const [fazendo, setFazendo] = useState<WeekRecipe | null>(null);
   const [verComprados, setVerComprados] = useState(false);
 
   const grupos = useMemo(() => {
@@ -92,9 +90,9 @@ export function PlanejarScreen() {
                 <div className="review-item" key={w.id}>
                   <div className="name">{r?.titulo ?? 'Receita apagada'}</div>
                   <div className="row-btns">
-                    <button type="button" className="btn ghost sm" onClick={() => setFazendo(w)} disabled={!r}>
+                    <Link className={`btn ghost sm ${r ? '' : 'disabled'}`} to={r ? `/cozinhar/${r.id}/finalizar?w=${w.id}` : '#'}>
                       Fiz
-                    </button>
+                    </Link>
                     <button type="button" className="btn ghost sm" onClick={() => void passarParaSemana(w.id, semana)}>
                       Adiar
                     </button>
@@ -241,7 +239,6 @@ export function PlanejarScreen() {
         />
       )}
       {comprando && <CompraSheet linha={comprando} ing={comprando.ingredientId ? catalogo.get(comprando.ingredientId) : undefined} semana={semana} onClose={() => setComprando(null)} />}
-      {fazendo && <FeitaSheet w={fazendo} onClose={() => setFazendo(null)} />}
     </>
   );
 }

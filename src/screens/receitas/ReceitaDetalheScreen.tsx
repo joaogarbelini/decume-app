@@ -13,6 +13,9 @@ import { PhotoGallery, useAdicionarFotos } from './PhotoGallery';
 import { Sheet } from '../../components/Sheet';
 import { adicionarNaSemana } from '../../db/week';
 import { chaveSemana, proximaSemana, rotuloSemana } from '../../lib/dates';
+import { db } from '../../db/db';
+import { datasDasSessoes, resumir, type ResumoAvaliacoes } from '../../db/cook';
+import { Nota } from '../../components/Stars';
 
 const NUTRIENTES: { k: keyof Nutri100g; nome: string; un: string; casas: number }[] = [
   { k: 'kcal', nome: 'Calorias', un: 'kcal', casas: 0 },
@@ -38,6 +41,15 @@ export function ReceitaDetalheScreen() {
     [dados, catalogo],
   );
   const veg = useMemo(() => (dados && catalogo ? ehVegetariana(dados.ingredientes, catalogo) : false), [dados, catalogo]);
+  const avaliacoes = useLiveQuery(async () => {
+    const [lista, datas] = await Promise.all([db.ratings.where('recipeId').equals(id).toArray(), datasDasSessoes(id)]);
+    return { resumo: resumir(lista, datas), datas };
+  }, [id]);
+  // receita desta semana ainda a fazer: o "Cozinhar" já marca ela como feita no fim
+  const daSemana = useLiveQuery(
+    async () => (await db.weekRecipes.where('recipeId').equals(id).toArray()).find((w) => w.status === 'a_fazer' && w.semana === chaveSemana(new Date())) ?? null,
+    [id],
+  );
 
   if (dados === null) return <Navigate to="/receitas" replace />;
   if (!dados || !catalogo || !nutri) return <SubHeader title="" />;
@@ -73,7 +85,19 @@ export function ReceitaDetalheScreen() {
               rende {plural(r.porcoes, 'porção', 'porções')}
             </span>
           </div>
-          <NoCardapio recipeId={r.id} />
+          <div className="row-btns detail-actions">
+            <Link className="btn sm" to={`/cozinhar/${r.id}${daSemana ? `?w=${daSemana.id}` : ''}`}>
+              <Icon name="pot" />
+              Cozinhar
+            </Link>
+            <NoCardapio recipeId={r.id} />
+          </div>
+          {avaliacoes?.resumo && (
+            <div className="metas">
+              <Nota valor={avaliacoes.resumo.nota} vezes={avaliacoes.resumo.vezes} />
+              {!avaliacoes.resumo.fariaDeNovo && <span className="chip miss">não faria de novo</span>}
+            </div>
+          )}
           {(veg || r.tags.length > 0) && (
             <div className="metas">
               {veg && (
@@ -204,6 +228,8 @@ export function ReceitaDetalheScreen() {
           </section>
         )}
 
+        {avaliacoes?.resumo && <Avaliacoes resumo={avaliacoes.resumo} datas={avaliacoes.datas} />}
+
         <PhotoGallery recipeId={r.id} capaId={r.capaFotoId} />
       </main>
     </>
@@ -258,6 +284,42 @@ function NoCardapio({ recipeId }: { recipeId: string }) {
         </Sheet>
       )}
     </>
+  );
+}
+
+const CRITERIO_NOME = { sabor: 'Sabor', facilidade: 'Facilidade', custo: 'Custo-benefício', apresentacao: 'Apresentação' } as const;
+
+function Avaliacoes({ resumo, datas }: { resumo: ResumoAvaliacoes; datas: Map<string, string> }) {
+  return (
+    <section className="sec">
+      <div className="sec-h">
+        <h2>Avaliações</h2>
+        <span className="meta">{plural(resumo.vezes, 'vez', 'vezes')}</span>
+      </div>
+      <div className="card pad crit">
+        {(Object.keys(CRITERIO_NOME) as (keyof typeof CRITERIO_NOME)[]).map((k) => (
+          <div className="crit-row" key={k}>
+            <span>{CRITERIO_NOME[k]}</span>
+            <span className="bar" aria-hidden="true">
+              <span style={{ width: `${(resumo.criterios[k] / 5) * 100}%` }} />
+            </span>
+            <strong>{resumo.criterios[k].toLocaleString('pt-BR', { maximumFractionDigits: 1 })}</strong>
+          </div>
+        ))}
+        <div className="crit-row">
+          <span>Faria de novo?</span>
+          <strong>{resumo.fariaDeNovo ? 'Sim' : 'Não'}</strong>
+        </div>
+      </div>
+      {resumo.ultimas.filter((a) => a.comentario).slice(0, 5).map((a) => (
+        <div className="comment" key={a.id}>
+          <p>“{a.comentario}”</p>
+          <span className="sub">
+            {datas.get(a.cookSessionId) ? new Date(datas.get(a.cookSessionId)!).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+          </span>
+        </div>
+      ))}
+    </section>
   );
 }
 
