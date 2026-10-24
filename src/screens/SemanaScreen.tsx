@@ -8,12 +8,35 @@ import { db } from '../db/db';
 import type { WeekRecipe } from '../db/types';
 import { chaveSemana, rotuloSemana } from '../lib/dates';
 import { plural } from '../lib/text';
+import { carregarSugestoes } from '../db/sugestoes';
+import { calcularCobertura, type Cobertura } from '../lib/sugestoes';
+import { CoberturaChip, SugestaoCard } from './sugestoes/SugestaoCard';
+import type { RecipeIngredient } from '../db/types';
 
 export function SemanaScreen() {
   const semana = chaveSemana(new Date());
   const cardapio = useLiveQuery(() => db.weekRecipes.where('semana').equals(semana).toArray(), [semana]);
   const receitas = useLiveQuery(async () => new Map((await db.recipes.toArray()).map((r) => [r.id, r])), []);
   const sobras = useLiveQuery(() => marmitas(), []);
+  const sugestoes = useLiveQuery(() => carregarSugestoes(), []);
+  // cobertura da despensa para cada receita da semana, nas porções planejadas
+  const coberturas = useLiveQuery(async () => {
+    const [ws, linhas, catalogo, despensa, recs] = await Promise.all([
+      db.weekRecipes.where('semana').equals(semana).toArray(),
+      db.recipeIngredients.toArray(),
+      db.ingredients.toArray(),
+      db.pantry.toArray(),
+      db.recipes.toArray(),
+    ]);
+    const porReceita = new Map<string, RecipeIngredient[]>();
+    for (const l of linhas) porReceita.set(l.recipeId, [...(porReceita.get(l.recipeId) ?? []), l]);
+    const cat = new Map(catalogo.map((i) => [i.id, i]));
+    const desp = new Map(despensa.map((p) => [p.ingredientId, p]));
+    const porcoesDe = new Map(recs.map((r) => [r.id, r.porcoes]));
+    const m = new Map<string, Cobertura>();
+    for (const w of ws) m.set(w.id, calcularCobertura(porReceita.get(w.recipeId) ?? [], porcoesDe.get(w.recipeId) ?? w.porcoes, w.porcoes, cat, desp));
+    return m;
+  }, [semana]);
 
   if (!cardapio || !receitas || !sobras) return <TabHeader title="Esta semana" eyebrow={rotuloSemana(new Date())} />;
 
@@ -101,6 +124,14 @@ export function SemanaScreen() {
                               </span>
                             )}
                           </div>
+                          {coberturas?.get(w.id) && (
+                            <div className="metas">
+                              <CoberturaChip s={{ cobertura: coberturas.get(w.id)! }} />
+                              {coberturas.get(w.id)!.faltantes.length > 0 && (
+                                <span className="sub">{coberturas.get(w.id)!.faltantes.map((f) => f.nome.toLowerCase()).join(', ')}</span>
+                              )}
+                            </div>
+                          )}
                           {r && (
                             <div className="row-btns week-actions">
                               <Link className="btn sm" to={`/cozinhar/${r.id}?w=${w.id}`}>
@@ -158,7 +189,37 @@ export function SemanaScreen() {
             </Link>
           </>
         )}
+        {sugestoes && sugestoes.length > 0 && <DaPraFazer sugestoes={sugestoes} naSemana={new Set(aFazer.map((w) => w.recipeId))} />}
       </main>
     </>
+  );
+}
+
+function DaPraFazer({ sugestoes, naSemana }: { sugestoes: Awaited<ReturnType<typeof carregarSugestoes>>; naSemana: Set<string> }) {
+  const livres = sugestoes.filter((s) => !s.naoFariaDeNovo && !naSemana.has(s.recipe.id));
+  const prontas = livres.filter((s) => s.faixa === 'pronta');
+  const quase = livres.filter((s) => s.faixa === 'quase');
+  const mostrar = (prontas.length ? prontas : quase).slice(0, 3);
+  return (
+    <section className="sec">
+      <div className="sec-h">
+        <h2>Dá pra fazer agora</h2>
+        <Link className="meta" to="/sugestoes">
+          ver todas
+        </Link>
+      </div>
+      {!prontas.length && (
+        <p className="muted small">
+          {quase.length ? 'Nenhuma receita com tudo em casa. Estas estão a 1 ou 2 itens:' : 'Nenhuma receita do livro dá para fazer com a despensa de agora.'}
+        </p>
+      )}
+      {mostrar.length > 0 && (
+        <div className="recipe-list">
+          {mostrar.map((s) => (
+            <SugestaoCard key={s.recipe.id} s={s} compacto />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }

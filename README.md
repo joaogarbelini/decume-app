@@ -4,6 +4,8 @@ App pessoal para organizar a despensa, montar o cardápio da semana, guardar rec
 
 ## O que já tem
 
+O MVP está completo: as sete etapas do guideline estão no app.
+
 ### Etapa 1: fundação
 
 - App React instalável no celular (PWA), com visual creme, azul-marinho e laranja.
@@ -54,7 +56,15 @@ App pessoal para organizar a despensa, montar o cardápio da semana, guardar rec
 - A receita entra como rascunho e abre na revisão: ponto verde = reconhecido, laranja = escolha no catálogo, cinza = a gosto, com o texto original embaixo. Só depois de salva ela entra no cardápio e nas sugestões.
 - Pelo link, a foto da receita vira a capa.
 
-## Próximas etapas
+### Etapa 7: sugestões e tela Semana completa
+
+- "O que dá pra fazer": receitas salvas em três faixas pela cobertura da despensa (dá pra fazer, falta pouco com 1 ou 2 itens, precisa comprar, escondida por padrão). Ignora a gosto, opcionais e "sempre tenho"; básicos sem nível marcado contam como "tem".
+- Ordem: maior nota primeiro, depois a receita que usa o que está há mais tempo na despensa. Receitas avaliadas como "não faria de novo" ficam escondidas, com opção de mostrar.
+- "Falta pouco" mostra o que falta e põe na lista de compras com um toque, sem duplicar o que já está lá.
+- Tela Semana com a cobertura de cada receita da semana ("tem tudo" ou "falta 2 itens" e quais), marmitas e "Dá pra fazer agora".
+- Filtro "Dá pra fazer" no livro de receitas.
+
+## Etapas do MVP
 
 1. ~~Fundação~~
 2. ~~Receitas: formulário, detalhe, edição, fotos, cálculo nutricional, marca de vegetariana~~
@@ -62,9 +72,9 @@ App pessoal para organizar a despensa, montar o cardápio da semana, guardar rec
 4. ~~Cardápio da semana e lista de compras por seção~~
 5. ~~Cozinhar: modo checklist, baixa, marmitas, avaliação~~
 6. ~~Importação de receitas por link (TudoGostoso)~~
-7. Sugestões com base na despensa
+7. ~~Sugestões com base na despensa~~
 
-O planejamento completo está no documento "deCumê — Guideline do App".
+O planejamento completo está no documento "deCumê — Guideline do App". Próximo: fase 2 (sincronização na nuvem, sugestões com IA, validade e preços).
 
 ## Rodar no computador
 

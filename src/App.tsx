@@ -6,6 +6,7 @@ import { PlanejarScreen } from './screens/planejar/PlanejarScreen';
 import { SemanaScreen } from './screens/SemanaScreen';
 import { CozinharScreen } from './screens/cozinhar/CozinharScreen';
 import { FinalizarScreen } from './screens/cozinhar/FinalizarScreen';
+import { SugestoesScreen } from './screens/sugestoes/SugestoesScreen';
 import { DespensaScreen } from './screens/despensa/DespensaScreen';
 import { HistoricoScreen } from './screens/despensa/HistoricoScreen';
 import { LivroScreen } from './screens/receitas/LivroScreen';
@@ -30,6 +31,7 @@ export function App() {
           <Route path="/receitas/:id/editar" element={<ReceitaFormScreen />} />
           <Route path="/cozinhar/:id" element={<CozinharScreen />} />
           <Route path="/cozinhar/:id/finalizar" element={<FinalizarScreen />} />
+          <Route path="/sugestoes" element={<SugestoesScreen />} />
           <Route path="/ajustes" element={<AjustesScreen />} />
           <Route path="/ajustes/catalogo" element={<CatalogoScreen />} />
           <Route path="*" element={<Navigate to="/" replace />} />

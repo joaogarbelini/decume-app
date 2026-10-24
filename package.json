@@ -1,7 +1,7 @@
 {
   "name": "decume",
   "private": true,
-  "version": "0.6.0",
+  "version": "1.0.0",
   "description": "deCumê: despensa, cardápio da semana, receitas e lista de compras",
   "type": "module",
   "scripts": {

@@ -466,6 +466,14 @@ a.plain { color: inherit; text-decoration: none; display: block; }
 .empty-state .row-btns { width: 100%; }
 .ajuste-imp { display: flex; flex-direction: column; gap: 8px; }
 
+
+/* ---------- Etapa 7: sugestões ---------- */
+.sug-card .grow { gap: 6px; }
+.falta-lista { font-size: 13px; color: var(--accent-ink); }
+.ok-text { color: var(--sage); font-weight: 700; font-size: 13px; }
+a.meta { color: var(--accent-ink); font-weight: 700; text-decoration: none; }
+.week-card .metas .sub { font-size: 12px; color: var(--muted); }
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }

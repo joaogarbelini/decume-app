@@ -8,17 +8,20 @@ import { db } from '../../db/db';
 import type { Recipe, RecipeIngredient } from '../../db/types';
 import { calcularNutricao, ehVegetariana } from '../../lib/nutrition';
 import { resumosPorReceita } from '../../db/cook';
+import { carregarSugestoes } from '../../db/sugestoes';
 import { Nota } from '../../components/Stars';
 import { casaBusca, plural } from '../../lib/text';
 
 const VEG = '__veg__';
 const BOAS = '__boas__';
+const PRONTAS = '__prontas__';
 
 export function LivroScreen() {
   const receitas = useLiveQuery(() => db.recipes.orderBy('titulo').toArray(), []);
   const linhas = useLiveQuery(() => db.recipeIngredients.toArray(), []);
   const catalogo = useCatalogo();
   const notas = useLiveQuery(() => resumosPorReceita(), []);
+  const prontas = useLiveQuery(async () => new Set((await carregarSugestoes()).filter((s) => s.faixa === 'pronta').map((s) => s.recipe.id)), []);
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<string | null>(null);
 
@@ -48,10 +51,11 @@ export function LivroScreen() {
       (receitas ?? []).filter((r) => {
         if (filtro === VEG && !info.get(r.id)?.veg) return false;
         if (filtro === BOAS && (notas?.get(r.id)?.nota ?? 0) < 4) return false;
-        if (filtro && filtro !== VEG && filtro !== BOAS && !r.tags.includes(filtro)) return false;
+        if (filtro === PRONTAS && !prontas?.has(r.id)) return false;
+        if (filtro && filtro !== VEG && filtro !== BOAS && filtro !== PRONTAS && !r.tags.includes(filtro)) return false;
         return casaBusca(busca, r.titulo, ...r.tags);
       }),
-    [receitas, filtro, busca, info, notas],
+    [receitas, filtro, busca, info, notas, prontas],
   );
 
   if (!receitas) return <TabHeader title="Receitas" eyebrow="Seu livro" />;
@@ -96,11 +100,17 @@ export function LivroScreen() {
                 <Icon name="search" />
                 <input type="search" placeholder="Buscar receita ou tag" value={busca} onChange={(e) => setBusca(e.target.value)} aria-label="Buscar receita" />
               </label>
-              {(temVeg || temBoas || tags.length > 0) && (
+              {(temVeg || temBoas || (prontas?.size ?? 0) > 0 || tags.length > 0) && (
                 <div className="chip-row" role="group" aria-label="Filtrar">
                   <button type="button" className={`fchip ${filtro === null ? 'on' : ''}`} aria-pressed={filtro === null} onClick={() => setFiltro(null)}>
                     Todas
                   </button>
+                  {(prontas?.size ?? 0) > 0 && (
+                    <button type="button" className={`fchip ${filtro === PRONTAS ? 'on' : ''}`} aria-pressed={filtro === PRONTAS} onClick={() => setFiltro(filtro === PRONTAS ? null : PRONTAS)}>
+                      <Icon name="jar" />
+                      Dá pra fazer
+                    </button>
+                  )}
                   {temVeg && (
                     <button type="button" className={`fchip ${filtro === VEG ? 'on' : ''}`} aria-pressed={filtro === VEG} onClick={() => setFiltro(filtro === VEG ? null : VEG)}>
                       <Icon name="leaf" />
