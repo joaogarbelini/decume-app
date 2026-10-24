@@ -135,6 +135,7 @@ h1, h2, h3 { color: var(--navy); font-family: var(--display); font-weight: 700; 
 .li .sub { font-size: 13px; color: var(--muted); }
 .li .qty { font-variant-numeric: tabular-nums; font-weight: 800; white-space: nowrap; }
 a.li { color: inherit; text-decoration: none; }
+.li > svg { width: 20px; height: 20px; flex: none; color: var(--muted); }
 
 /* Busca */
 .search { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 0 12px; min-height: 46px; }
