@@ -125,3 +125,16 @@ describe('fotos', () => {
     expect(encaixar(800, 600)).toEqual({ largura: 800, altura: 600 });
   });
 });
+
+describe('estoque na tela', () => {
+  it('mostra kg e litros a partir de mil', async () => {
+    const { formatEstoque, unidadesEstoque } = await import('./units');
+    expect(formatEstoque(750, 'g')).toBe('750 g');
+    expect(formatEstoque(1250, 'g')).toBe('1,25 kg');
+    expect(formatEstoque(1500, 'ml')).toBe('1,5 l');
+    expect(formatEstoque(6, 'un')).toBe('6 un');
+    expect(formatEstoque(2.5, 'g')).toBe('2,5 g');
+    expect(unidadesEstoque(ing('farinha-trigo'))).toEqual(['g', 'kg']);
+    expect(unidadesEstoque(ing('ovo'))).toEqual(['un', 'g', 'kg']);
+  });
+});

@@ -9,12 +9,31 @@ import { Sheet } from './Sheet';
 const MAX_RESULTADOS = 40;
 
 /** Busca no catálogo e, se não achar, cria o ingrediente na hora. */
-export function IngredientPicker({ catalogo, onPick, onClose }: { catalogo: Map<string, Ingredient>; onPick: (i: Ingredient) => void; onClose: () => void }) {
+export function IngredientPicker({
+  catalogo,
+  onPick,
+  onClose,
+  titulo = 'Escolher ingrediente',
+  aviso,
+  incluir,
+  descrever,
+}: {
+  catalogo: Map<string, Ingredient>;
+  onPick: (i: Ingredient) => void;
+  onClose: () => void;
+  titulo?: string;
+  /** mensagem curta no topo (ex.: o que acabou de ser adicionado) */
+  aviso?: string | null;
+  /** filtro opcional dos itens oferecidos */
+  incluir?: (i: Ingredient) => boolean;
+  /** texto da segunda linha; padrão = seção do mercado */
+  descrever?: (i: Ingredient) => string;
+}) {
   const [busca, setBusca] = useState('');
   const [criando, setCriando] = useState(false);
 
   const resultados = useMemo(() => {
-    const todos = [...catalogo.values()].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    const todos = [...catalogo.values()].filter((i) => !incluir || incluir(i)).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
     if (!busca.trim()) return todos.slice(0, MAX_RESULTADOS);
     // Quem começa com a busca (no nome, numa palavra do nome ou num apelido) vem primeiro.
     const q = semAcento(busca.trim());
@@ -30,14 +49,19 @@ export function IngredientPicker({ catalogo, onPick, onClose }: { catalogo: Map<
       .sort((a, b) => a[0] - b[0])
       .map(([, i]) => i)
       .slice(0, MAX_RESULTADOS);
-  }, [catalogo, busca]);
+  }, [catalogo, busca, incluir]);
 
   if (criando) {
     return <NovoIngredienteSheet nomeInicial={busca.trim()} onCriado={onPick} onClose={() => setCriando(false)} />;
   }
 
   return (
-    <Sheet title="Escolher ingrediente" onClose={onClose}>
+    <Sheet title={titulo} onClose={onClose}>
+      {aviso && (
+        <div className="alert ok" role="status">
+          {aviso}
+        </div>
+      )}
       <label className="search">
         <Icon name="search" />
         <input
@@ -54,7 +78,7 @@ export function IngredientPicker({ catalogo, onPick, onClose }: { catalogo: Map<
           <button type="button" className="li pick" key={i.id} onClick={() => onPick(i)}>
             <div className="grow">
               <div className="name">{i.nome}</div>
-              <div className="sub">{i.secao}</div>
+              <div className="sub">{descrever ? descrever(i) : i.secao}</div>
             </div>
           </button>
         ))}

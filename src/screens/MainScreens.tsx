@@ -1,7 +1,4 @@
-import { useLiveQuery } from 'dexie-react-hooks';
-import { Link } from 'react-router-dom';
 import { EmptyState, TabHeader } from '../components/Layout';
-import { db } from '../db/db';
 import { proximaSemana, rotuloSemana } from '../lib/dates';
 
 // Telas principais da etapa 1: estrutura e estados vazios.
@@ -28,29 +25,6 @@ export function PlanejarScreen() {
       <main className="view">
         <EmptyState icon="plan" title="Cardápio e lista de compras">
           Aqui você vai montar as receitas da próxima semana e ver a lista de compras por seção do mercado.
-        </EmptyState>
-      </main>
-    </>
-  );
-}
-
-export function DespensaScreen() {
-  const total = useLiveQuery(() => db.ingredients.count(), []);
-  return (
-    <>
-      <TabHeader title="Despensa" eyebrow="O que tem em casa" />
-      <main className="view">
-        <EmptyState
-          icon="jar"
-          title="Despensa vazia"
-          action={
-            <Link className="btn ghost" to="/ajustes/catalogo">
-              Ver catálogo de ingredientes
-            </Link>
-          }
-        >
-          O controle de estoque vem logo. O catálogo{total ? ` com ${total} ingredientes` : ''} já está pronto, ligado à
-          tabela TACO.
         </EmptyState>
       </main>
     </>

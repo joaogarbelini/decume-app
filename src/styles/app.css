@@ -342,6 +342,30 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .picked { display: flex; align-items: center; gap: 10px; background: var(--sage-soft); color: var(--sage); border-radius: 12px; padding: 8px 8px 8px 12px; font-weight: 700; font-size: 14px; }
 .picked .grow { flex: 1; min-width: 0; }
 
+
+/* ---------- Etapa 3: despensa ---------- */
+.intro { display: flex; flex-direction: column; gap: 4px; }
+.qty.pos { color: var(--sage); }
+.qty.neg { color: var(--accent-ink); }
+.cap::first-letter { text-transform: uppercase; }
+.li.mov { min-height: 52px; }
+.mini-hist { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; }
+.stock-now { display: flex; justify-content: space-between; align-items: baseline; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.stock-now strong { font-size: 20px; color: var(--navy); font-variant-numeric: tabular-nums; }
+.err-text { color: var(--accent-ink); font-weight: 700; }
+.nivel-li { gap: 8px; }
+.name-btn { border: 0; background: none; padding: 0; text-align: left; color: inherit; min-height: 44px; display: flex; flex-direction: column; justify-content: center; }
+.niveis { display: flex; gap: 4px; flex: none; }
+.nv {
+  min-height: 36px; min-width: 56px; padding: 0 8px; border-radius: 10px; border: 1px solid var(--line-strong);
+  background: var(--surface); color: var(--muted); font-weight: 700; font-size: 13px;
+}
+.nv.on.tem { background: var(--sage); border-color: var(--sage); color: #fff; }
+.nv.on.pouco { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); }
+.nv.on.acabou { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.niveis.lg { gap: 8px; }
+.niveis.lg .nv { flex: 1; min-height: 52px; font-size: 16px; border-radius: 14px; }
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }

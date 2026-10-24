@@ -168,6 +168,20 @@ export function emGramas(ing: Ingredient, quantidade: number, unidade: string | 
   return ing.pesoUnidadeG ? base * ing.pesoUnidadeG : null;
 }
 
+/** Estoque na unidade base, para exibir: "750 g", "1,2 kg", "1,5 l", "6 un". */
+export function formatEstoque(quantidade: number, unidadeBase: Ingredient['unidadeBase']): string {
+  const num = (q: number, casas: number) => q.toLocaleString('pt-BR', { maximumFractionDigits: casas });
+  if (unidadeBase === 'un') return `${num(quantidade, 1)} un`;
+  const grande = unidadeBase === 'g' ? 'kg' : 'l';
+  if (quantidade >= 1000) return `${num(quantidade / 1000, 2)} ${grande}`;
+  return `${num(quantidade, quantidade < 10 ? 1 : 0)} ${unidadeBase}`;
+}
+
+/** Unidades para lançar estoque: sem medidas caseiras, que não fazem sentido na despensa. */
+export function unidadesEstoque(ing: Ingredient): UnidadeReceita[] {
+  return unidadesPara(ing).filter((u) => !CASEIRAS.includes(u));
+}
+
 /** true quando a unidade é caseira e o ingrediente ainda não tem conversão para ela. */
 export function faltaConversao(ing: Ingredient, unidade: string | null): boolean {
   if (!unidade) return false;

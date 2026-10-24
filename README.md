@@ -22,11 +22,20 @@ App pessoal para organizar a despensa, montar o cardápio da semana, guardar rec
 - Fotos: capa e galeria, reduzidas para 1200 px no próprio celular.
 - Folha de vegetariana nas receitas sem carne, frango ou peixe, detectada pelos ingredientes.
 
+### Etapa 3: despensa
+
+- Estoque por seção do mercado: quantidade nos itens principais (g, ml ou unidades, mostrados em kg e litros a partir de mil) e nível tem, pouco ou acabou nos básicos, marcado com um toque.
+- Adicionar à despensa: "Comprei agora" (compra avulsa) ou "Já tinha em casa", vários itens seguidos no mesmo painel.
+- Corrigir a quantidade de um item ou marcar que acabou.
+- Busca, inclusive do que não tem em casa, para lançar direto.
+- Histórico de movimentos por dia, e os últimos de cada item no painel dele.
+- O estoque nunca fica negativo: a baixa ao cozinhar (etapa 5) para em zero e informa a diferença.
+
 ## Próximas etapas
 
 1. ~~Fundação~~
 2. ~~Receitas: formulário, detalhe, edição, fotos, cálculo nutricional, marca de vegetariana~~
-3. Despensa: estoque exato e por nível, compra avulsa, ajuste, histórico
+3. ~~Despensa: estoque exato e por nível, compra avulsa, ajuste, histórico~~
 4. Cardápio da semana e lista de compras por seção
 5. Cozinhar: modo checklist, baixa, marmitas, avaliação
 6. Importação de receitas por link (TudoGostoso)

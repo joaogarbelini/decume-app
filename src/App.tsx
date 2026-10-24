@@ -2,7 +2,9 @@ import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { TabBar } from './components/Layout';
 import { AjustesScreen } from './screens/AjustesScreen';
 import { CatalogoScreen } from './screens/CatalogoScreen';
-import { DespensaScreen, PlanejarScreen, SemanaScreen } from './screens/MainScreens';
+import { PlanejarScreen, SemanaScreen } from './screens/MainScreens';
+import { DespensaScreen } from './screens/despensa/DespensaScreen';
+import { HistoricoScreen } from './screens/despensa/HistoricoScreen';
 import { LivroScreen } from './screens/receitas/LivroScreen';
 import { ReceitaDetalheScreen } from './screens/receitas/ReceitaDetalheScreen';
 import { ReceitaFormScreen } from './screens/receitas/ReceitaFormScreen';
@@ -16,6 +18,7 @@ export function App() {
           <Route path="/" element={<SemanaScreen />} />
           <Route path="/planejar" element={<PlanejarScreen />} />
           <Route path="/despensa" element={<DespensaScreen />} />
+          <Route path="/despensa/historico" element={<HistoricoScreen />} />
           <Route path="/receitas" element={<LivroScreen />} />
           <Route path="/receitas/nova" element={<ReceitaFormScreen key="nova" />} />
           <Route path="/receitas/:id" element={<ReceitaDetalheScreen />} />
