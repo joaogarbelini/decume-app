@@ -366,6 +366,39 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .niveis.lg { gap: 8px; }
 .niveis.lg .nv { flex: 1; min-height: 52px; font-size: 16px; border-radius: 14px; }
 
+
+/* ---------- Etapa 4: cardápio e lista ---------- */
+.li .name svg { width: 15px; height: 15px; color: var(--sage); vertical-align: -2px; }
+a.plain { color: inherit; text-decoration: none; display: block; }
+.add-rec .thumb svg { width: 22px; height: 22px; }
+.add-rec > svg { width: 20px; height: 20px; color: var(--navy); flex: none; }
+.add-week { align-self: flex-start; }
+.review { display: flex; flex-direction: column; gap: 10px; border-color: var(--accent); background: var(--accent-soft); }
+.review h2 { font-size: 18px; }
+.review-item { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; border-top: 1px solid rgba(201, 88, 31, 0.25); }
+.review-item .btn { background: var(--surface); }
+.week-li { align-items: center; }
+.week-li .thumb svg { width: 22px; height: 22px; }
+.week-li .grow { display: flex; flex-direction: column; gap: 6px; }
+.stepper.sm { padding: 2px; font-size: 13px; }
+.stepper.sm button { width: 30px; height: 30px; }
+.stepper.sm span { min-width: 70px; padding: 0 2px; }
+.week-card .btn { align-self: flex-start; margin-top: 4px; }
+.badge-ic.ok { background: var(--sage); }
+.shop-group { display: flex; flex-direction: column; gap: 6px; }
+.shop-h { font-size: 13px; font-family: var(--body); font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.shop-li { border: 0; border-bottom: 1px solid var(--line); background: none; width: 100%; text-align: left; color: inherit; min-height: 60px; }
+.shop-li:last-child { border-bottom: 0; }
+.checkcircle { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--navy-line); flex: none; background: var(--surface); }
+.shop-li:active .checkcircle { background: var(--sage-soft); border-color: var(--sage); }
+.miss-text { color: var(--accent-ink); font-weight: 700; }
+.toggle-h { border: 0; background: none; padding: 0; width: 100%; color: inherit; min-height: 40px; align-items: center; }
+.toggle-h .meta { display: inline-flex; align-items: center; gap: 4px; }
+.toggle-h .meta svg { width: 16px; height: 16px; }
+.li.bought > svg { width: 20px; height: 20px; color: var(--sage); flex: none; }
+.li.bought .name { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--navy-line); }
+.buy-info { display: flex; flex-direction: column; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; }
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }

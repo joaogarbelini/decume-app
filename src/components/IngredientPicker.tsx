@@ -17,6 +17,7 @@ export function IngredientPicker({
   aviso,
   incluir,
   descrever,
+  onTextoLivre,
 }: {
   catalogo: Map<string, Ingredient>;
   onPick: (i: Ingredient) => void;
@@ -28,6 +29,8 @@ export function IngredientPicker({
   incluir?: (i: Ingredient) => boolean;
   /** texto da segunda linha; padrão = seção do mercado */
   descrever?: (i: Ingredient) => string;
+  /** quando presente, oferece adicionar o texto digitado sem passar pelo catálogo */
+  onTextoLivre?: (texto: string) => void;
 }) {
   const [busca, setBusca] = useState('');
   const [criando, setCriando] = useState(false);
@@ -84,9 +87,15 @@ export function IngredientPicker({
         ))}
         {!resultados.length && <p className="muted small pick-empty">Nada no catálogo com "{busca}".</p>}
       </div>
+      {onTextoLivre && busca.trim() && (
+        <button type="button" className="btn block" onClick={() => onTextoLivre(busca.trim())}>
+          <Icon name="plus" />
+          Adicionar "{busca.trim()}" à lista
+        </button>
+      )}
       <button type="button" className="btn ghost block" onClick={() => setCriando(true)}>
         <Icon name="plus" />
-        {busca.trim() ? `Criar "${busca.trim()}"` : 'Criar ingrediente novo'}
+        {busca.trim() ? `Criar "${busca.trim()}" no catálogo` : 'Criar ingrediente novo'}
       </button>
     </Sheet>
   );

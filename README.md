@@ -31,12 +31,21 @@ App pessoal para organizar a despensa, montar o cardápio da semana, guardar rec
 - Histórico de movimentos por dia, e os últimos de cada item no painel dele.
 - O estoque nunca fica negativo: a baixa ao cozinhar (etapa 5) para em zero e informa a diferença.
 
+### Etapa 4: cardápio e lista de compras
+
+- Planejar esta semana ou a próxima: receitas do livro, sem dia fixo, com porções ajustáveis. Também dá para "Pôr no cardápio" direto do detalhe da receita.
+- Lista de compras calculada: cardápio menos despensa, ajustada pelas porções, agrupada por seção do mercado e dizendo para qual receita é cada item. Básicos em "pouco" ou "acabou" entram mesmo sem receita; sal e pimenta aparecem só como lembrete.
+- Receitas ainda a fazer de semanas anteriores continuam contando, porque vão usar a despensa.
+- No mercado: tocar no item pergunta quanto comprou (já preenchido com o que falta, arredondado) e manda para a despensa. Item avulso do catálogo ou em texto livre ("papel toalha"). Comprados ficam numa lista própria com "Desfazer".
+- Revisão das receitas que ficaram a fazer em semanas passadas: Fiz, Adiar ou Tirar.
+- Tela Semana com as receitas desta semana e "Marcar como feita", que mostra a baixa prevista e avisa se a despensa tinha menos do que a receita usa.
+
 ## Próximas etapas
 
 1. ~~Fundação~~
 2. ~~Receitas: formulário, detalhe, edição, fotos, cálculo nutricional, marca de vegetariana~~
 3. ~~Despensa: estoque exato e por nível, compra avulsa, ajuste, histórico~~
-4. Cardápio da semana e lista de compras por seção
+4. ~~Cardápio da semana e lista de compras por seção~~
 5. Cozinhar: modo checklist, baixa, marmitas, avaliação
 6. Importação de receitas por link (TudoGostoso)
 7. Sugestões com base na despensa

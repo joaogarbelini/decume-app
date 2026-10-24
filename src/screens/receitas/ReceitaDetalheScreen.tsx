@@ -10,6 +10,9 @@ import { calcularNutricao, ehVegetariana } from '../../lib/nutrition';
 import { plural } from '../../lib/text';
 import { formatMedida } from '../../lib/units';
 import { PhotoGallery, useAdicionarFotos } from './PhotoGallery';
+import { Sheet } from '../../components/Sheet';
+import { adicionarNaSemana } from '../../db/week';
+import { chaveSemana, proximaSemana, rotuloSemana } from '../../lib/dates';
 
 const NUTRIENTES: { k: keyof Nutri100g; nome: string; un: string; casas: number }[] = [
   { k: 'kcal', nome: 'Calorias', un: 'kcal', casas: 0 },
@@ -70,6 +73,7 @@ export function ReceitaDetalheScreen() {
               rende {plural(r.porcoes, 'porção', 'porções')}
             </span>
           </div>
+          <NoCardapio recipeId={r.id} />
           {(veg || r.tags.length > 0) && (
             <div className="metas">
               {veg && (
@@ -202,6 +206,57 @@ export function ReceitaDetalheScreen() {
 
         <PhotoGallery recipeId={r.id} capaId={r.capaFotoId} />
       </main>
+    </>
+  );
+}
+
+/** "Pôr no cardápio": escolhe esta semana ou a próxima. */
+function NoCardapio({ recipeId }: { recipeId: string }) {
+  const [aberto, setAberto] = useState(false);
+  const [feito, setFeito] = useState<{ texto: string; s: string } | null>(null);
+  const hoje = new Date();
+  const opcoes = [
+    { s: 'atual', chave: chaveSemana(hoje), texto: 'Esta semana', datas: rotuloSemana(hoje) },
+    { s: 'proxima', chave: chaveSemana(proximaSemana(hoje)), texto: 'Próxima semana', datas: rotuloSemana(proximaSemana(hoje)) },
+  ];
+  return (
+    <>
+      <button type="button" className="btn ghost sm add-week" onClick={() => { setFeito(null); setAberto(true); }}>
+        <Icon name="week" />
+        Pôr no cardápio
+      </button>
+      {aberto && (
+        <Sheet title="Pôr no cardápio" onClose={() => setAberto(false)}>
+          {feito ? (
+            <>
+              <div className="alert ok" role="status">Adicionada: {feito.texto.toLowerCase()}.</div>
+              <Link className="btn block" to={feito.s === 'atual' ? '/planejar?s=atual' : '/planejar'}>
+                Ver cardápio e lista
+              </Link>
+            </>
+          ) : (
+            <div className="list pick-list">
+              {opcoes.map((o) => (
+                <button
+                  type="button"
+                  key={o.s}
+                  className="li pick"
+                  onClick={async () => {
+                    await adicionarNaSemana(o.chave, recipeId);
+                    setFeito({ texto: o.texto, s: o.s });
+                  }}
+                >
+                  <div className="grow">
+                    <div className="name">{o.texto}</div>
+                    <div className="sub">{o.datas}</div>
+                  </div>
+                  <Icon name="plus" />
+                </button>
+              ))}
+            </div>
+          )}
+        </Sheet>
+      )}
     </>
   );
 }
